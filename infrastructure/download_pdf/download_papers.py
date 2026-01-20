@@ -38,7 +38,7 @@ def log(msg: str):
 ENV_PATH = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(ENV_PATH)
 
-PROJECT_ROOT = os.getenv("PROJECT_ROOT", "/data/project/atwoddl/DRAgent")
+PROJECT_ROOT = os.getenv("PROJECT_ROOT")
 BASE_DIR = Path(PROJECT_ROOT) / "experiments" / "pdf"
 MAX_PAPERS_PER_DOMAIN = 500
 PMC_MAX_PER_KEYWORD = 800
@@ -103,6 +103,11 @@ DOMAINS = {
             "tissue segmentation deep learning",
             "spatial resolved transcriptomics",
             "multiplexed imaging analysis",
+            "spatial cell-cell communication",
+            "niche identification spatial",
+            "spatial deconvolution deep learning",
+            "spatial trajectory analysis",
+            "spatial multi-omics integration",
             # Architecture keywords
             "graph attention network gene expression",
             "variational autoencoder single cell",
@@ -114,6 +119,11 @@ DOMAINS = {
             "autoencoder gene expression",
             "graph convolutional network biology",
             "attention mechanism bioinformatics",
+            "U-Net biomedical image",
+            "vision transformer pathology",
+            "masked autoencoder biology",
+            "diffusion model gene expression",
+            "foundation model single cell",
         ]
     ),
     "drug_response_prediction": DomainConfig(
@@ -132,6 +142,11 @@ DOMAINS = {
             "anti-cancer drug prediction",
             "chemosensitivity prediction",
             "drug synergy prediction",
+            "dose response prediction",
+            "drug combination prediction",
+            "precision oncology deep learning",
+            "patient drug response prediction",
+            "drug resistance prediction",
             # Architecture keywords
             "transformer molecular representation",
             "graph isomorphism network molecule",
@@ -143,6 +158,11 @@ DOMAINS = {
             "graph transformer molecule",
             "message passing neural network",
             "molecular fingerprint deep learning",
+            "cross-attention drug cell",
+            "dual encoder drug response",
+            "variational autoencoder drug",
+            "pre-trained molecular model",
+            "multi-modal learning drug",
         ]
     ),
     "drug_target_interaction": DomainConfig(
@@ -161,6 +181,11 @@ DOMAINS = {
             "virtual screening machine learning",
             "drug target affinity",
             "compound target prediction",
+            "structure-based drug design",
+            "binding site prediction",
+            "protein-ligand binding",
+            "target identification deep learning",
+            "kinase inhibitor prediction",
             # Architecture keywords
             "heterogeneous network embedding",
             "knowledge graph drug discovery",
@@ -172,6 +197,11 @@ DOMAINS = {
             "multi-task learning drug",
             "transfer learning drug discovery",
             "self-supervised molecular",
+            "3D molecular generation",
+            "equivariant neural network molecule",
+            "geometric deep learning drug",
+            "protein structure prediction",
+            "co-attention drug target",
         ]
     ),
     "drug_repurposing": DomainConfig(
@@ -190,6 +220,11 @@ DOMAINS = {
             "drug side effect prediction",
             "drug drug interaction prediction",
             "adverse drug reaction prediction",
+            "therapeutic use prediction",
+            "drug disease association",
+            "phenotype drug prediction",
+            "multi-target drug design",
+            "network pharmacology deep learning",
             # Architecture keywords
             "bilinear attention network",
             "graph convolutional network molecule",
@@ -201,6 +236,11 @@ DOMAINS = {
             "pretrained molecular model",
             "few-shot learning drug",
             "meta-learning drug discovery",
+            "link prediction biomedical",
+            "heterogeneous graph neural network",
+            "relational graph convolutional",
+            "siamese network drug",
+            "triplet learning molecular",
         ]
     ),
 }
