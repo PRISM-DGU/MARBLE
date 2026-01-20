@@ -77,8 +77,32 @@ USER_ID=$(whoami)
 
 ## Running MARBLE
 
+### 1. Start LangGraph Server
+
 ```bash
 langgraph dev --allow-blocking --no-reload --tunnel --port 3001
+```
+
+### 2. Execute MARBLE (in a new terminal)
+
+```bash
+curl -X POST http://localhost:3001/runs/wait \
+  -H "Content-Type: application/json" \
+  -d '{
+    "assistant_id": "MARBLE",
+    "input": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "--task build --model stagate --iter 50 --patience 10 --weight 0.1"
+        }
+      ]
+    },
+    "config": {
+      "configurable": {},
+      "recursion_limit": 5000
+    }
+  }'
 ```
 
 ## Project Structure
