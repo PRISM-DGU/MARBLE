@@ -333,14 +333,14 @@ class EmbeddingScorer:
         second_best_iter = mb.get_2nd_best_iteration()
 
         if second_best_iter is None:
-            logger.info(f"[EmbeddingScorer] 2nd best iteration 없음 (momentum 미적용)")
+            logger.info(f"[EmbeddingScorer] No 2nd best iteration (momentum not applied)")
             self._2nd_s_arch_scores = {}
             self._2nd_best_iteration = None
             return
 
         # baseline(iter 0)에는 s_arch_scores.json이 없음
         if second_best_iter == 0:
-            logger.info(f"[EmbeddingScorer] 2nd best = baseline (iter 0), s_arch_scores 없음 (momentum 미적용)")
+            logger.info(f"[EmbeddingScorer] 2nd best = baseline (iter 0), no s_arch_scores (momentum not applied)")
             self._2nd_s_arch_scores = {}
             self._2nd_best_iteration = 0
             return
@@ -377,7 +377,7 @@ class EmbeddingScorer:
             self._paper_rewards = {}
             self._reward_snapshot_iteration = None
             logger.info(
-                f"[EmbeddingScorer] iter {self.current_iteration}: reward 미적용 (1~{self.reward_patience})"
+                f"[EmbeddingScorer] iter {self.current_iteration}: no reward applied (1~{self.reward_patience})"
             )
             return
 
@@ -397,7 +397,7 @@ class EmbeddingScorer:
                     snapshot = mb.get_all_paper_rewards()
                     self._reward_snapshot_iteration = None
                     logger.warning(
-                        f"[EmbeddingScorer] iter {self.current_iteration}: reward 스냅샷 없음 (iter {prev_block_end}), 현재 누적 reward 사용"
+                        f"[EmbeddingScorer] iter {self.current_iteration}: no snapshot (iter {prev_block_end}), using accumulated rewards"
                     )
             else:
                 self._reward_snapshot_iteration = prev_block_end
@@ -406,15 +406,15 @@ class EmbeddingScorer:
             if is_new_block_start:
                 block_end = prev_block_end + self.reward_patience
                 logger.info("=" * 60)
-                logger.info(f"[REWARD APPLIED] 새 블록 시작! iter {self.current_iteration}")
-                logger.info(f"  - iter {prev_block_end} 스냅샷 적용 중")
-                logger.info(f"  - 이 블록 범위: iter {self.current_iteration}~{block_end}")
-                logger.info(f"  - 적용된 논문 수: {len(snapshot)}개")
+                logger.info(f"[REWARD APPLIED] New block started! iter {self.current_iteration}")
+                logger.info(f"  - Applying iter {prev_block_end} snapshot")
+                logger.info(f"  - Block range: iter {self.current_iteration}~{block_end}")
+                logger.info(f"  - Papers: {len(snapshot)}")
                 logger.info(f"  - patience={self.reward_patience}, weight={self.reward_weight}")
                 logger.info("=" * 60)
             else:
                 logger.info(
-                    f"[EmbeddingScorer] iter {self.current_iteration}: reward 스냅샷 로드 (iter {prev_block_end}, {len(snapshot)}개)"
+                    f"[EmbeddingScorer] iter {self.current_iteration}: reward snapshot loaded (iter {prev_block_end}, {len(snapshot)} papers)"
                 )
 
             self._paper_rewards = snapshot

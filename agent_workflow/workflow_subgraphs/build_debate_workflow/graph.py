@@ -311,7 +311,7 @@ def _parse_other_components(config_path: Path) -> Dict[str, str]:
 
         return result
     except Exception as e:
-        logger.warning(f"[WORKSPACE] config.yaml 파싱 실패: {e}")
+        logger.warning(f"[WORKSPACE] config.yaml parsing failed: {e}")
         return {}
 
 
@@ -351,14 +351,14 @@ def _apply_best_changes_to_workspace(
         # 2. best의 *_other.py → target의 *_other.py로 복사 (같은 이름)
         best_other_file = best_path / "components" / f"{component_file}.py"
         if not best_other_file.exists():
-            logger.warning(f"[WORKSPACE] best의 {component_file}.py 없음")
+            logger.warning(f"[WORKSPACE] best's {component_file}.py not found")
             continue
 
         # target의 같은 이름 파일에 덮어쓰기 (build_0의 빈 템플릿 → best의 구현)
         target_other_file = target_path / "components" / f"{component_file}.py"
         shutil.copy2(str(best_other_file), str(target_other_file))
         logs.append(f"[WORKSPACE] {component_type}: {best_other_file.name} → {target_other_file.name}")
-        logger.info(f"[WORKSPACE] {component_type} 적용: {best_other_file.name} → {target_other_file.name}")
+        logger.info(f"[WORKSPACE] {component_type} applied: {best_other_file.name} -> {target_other_file.name}")
 
     # 3. best의 src/ → target의 src/로 복사
     best_src = best_path / "src"
@@ -370,14 +370,14 @@ def _apply_best_changes_to_workspace(
         shutil.copytree(str(best_src), str(target_src))
         src_files = list(best_src.glob("*.py"))
         logs.append(f"[WORKSPACE] src/ 복사: {len(src_files)}개 파일")
-        logger.info(f"[WORKSPACE] src/ 복사: {best_src} → {target_src}")
+        logger.info(f"[WORKSPACE] src/ copied: {best_src} -> {target_src}")
 
     # 4. best의 config.yaml을 target에 복사 (best 설정 유지)
     if best_config_path.exists():
         target_config_path = target_path / "config.yaml"
         shutil.copy2(str(best_config_path), str(target_config_path))
         logs.append(f"[WORKSPACE] config.yaml 복사 (best 설정)")
-        logger.info(f"[WORKSPACE] config.yaml 복사: {best_config_path} → {target_config_path}")
+        logger.info(f"[WORKSPACE] config.yaml copied: {best_config_path} -> {target_config_path}")
 
     return logs
 
@@ -408,7 +408,7 @@ def setup_build_workspace_node(state: MARBLEState) -> Dict[str, Any]:
     # build_0이 없으면 docker_images에서 fallback (init_iteration_node가 호출되지 않은 경우)
     if not baseline_path.exists():
         baseline_path = _get_source_path(target_model)
-        logger.warning(f"[BUILD_WORKSPACE] build_0 없음, docker_images 사용: {baseline_path}")
+        logger.warning(f"[BUILD_WORKSPACE] build_0 not found, using docker_images: {baseline_path}")
 
     logger.info(f"[BUILD_WORKSPACE] Model: {target_model}, Iteration: {current_iteration}")
     logger.info(f"[BUILD_WORKSPACE] Baseline: {baseline_path}")
@@ -456,7 +456,7 @@ def setup_build_workspace_node(state: MARBLEState) -> Dict[str, Any]:
                     processing_logs.extend(change_logs)
                     processing_logs.append(f"[BUILD_WORKSPACE] Best iteration {best_iter}의 변경사항 적용 완료")
                 else:
-                    logger.warning(f"[BUILD_WORKSPACE] Best build 폴더 없음: {best_path}")
+                    logger.warning(f"[BUILD_WORKSPACE] Best build folder not found: {best_path}")
             else:
                 processing_logs.append(f"[BUILD_WORKSPACE] Best = baseline, 변경사항 없음")
 

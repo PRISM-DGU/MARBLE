@@ -1,4 +1,4 @@
-"""Iteration 결과 분석을 위한 IterationAnalyzerAgent."""
+"""IterationAnalyzerAgent for analyzing iteration results."""
 
 from typing import Dict, Any, Optional, List
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -8,14 +8,14 @@ from agent_workflow.logger import logger
 from .schemas import IterationAnalysis
 
 
-# 메트릭별 개선 방향 정의 (낮을수록 좋은지, 높을수록 좋은지)
+# Metric improvement direction (lower is better vs higher is better)
 METRIC_DIRECTION = {
-    # 낮을수록 좋음
+    # Lower is better
     'rmse': 'lower',
     'mse': 'lower',
     'mae': 'lower',
     'loss': 'lower',
-    # 높을수록 좋음
+    # Higher is better
     'pcc': 'higher',
     'scc': 'higher',
     'pearson': 'higher',
@@ -30,26 +30,26 @@ METRIC_DIRECTION = {
     'silhouette': 'higher',
 }
 
-# 도메인별 PRIMARY 메트릭 (개선 여부 판단 기준)
-# 기본값이며, 호출부에서 primary_metrics를 넘기면 override됨
+# Primary metrics by domain (used to determine improvement)
+# Can be overridden by passing primary_metrics parameter
 PRIMARY_METRICS = ['rmse', 'ari', 'auroc', 'accuracy']
 
 
 class IterationAnalyzerAgent:
-    """Iteration 결과를 분석하여 교훈을 추출하는 에이전트.
+    """Agent that analyzes iteration results and extracts lessons.
 
-    Docker 실행 결과를 분석하여:
-    - improved: 성능 개선 여부
-    - delta: 메트릭 변화량
-    - reason: 결과 발생 이유 (LLM 생성)
-    - lessons: 핵심 교훈 (LLM 생성)
+    Analyzes Docker execution results to produce:
+    - improved: whether performance improved
+    - delta: metric changes
+    - reason: explanation of results (LLM-generated)
+    - lessons: key lessons learned (LLM-generated)
     """
 
     def __init__(self, model_name: str = "gpt-4o-mini"):
-        """IterationAnalyzerAgent 초기화.
+        """Initialize IterationAnalyzerAgent.
 
         Args:
-            model_name: 사용할 LLM 모델 이름
+            model_name: LLM model name to use
         """
         self.llm = init_chat_model(model_name, temperature=0.3)
 
@@ -62,26 +62,26 @@ class IterationAnalyzerAgent:
         docker_output: str = "",
         primary_metrics: Optional[List[str]] = None,
     ) -> IterationAnalysis:
-        """Iteration 결과 분석.
+        """Analyze iteration results.
 
         Args:
-            current_iteration: 현재 iteration 번호
-            current_metrics: 현재 성능 메트릭
-            current_changes: 현재 iteration에서 수행한 변경 사항
-            prev_metrics: 이전 iteration 성능 메트릭 (첫 iteration은 None)
-            docker_output: Docker 실행 출력 (마지막 부분)
-            primary_metrics: PRIMARY 메트릭 리스트 override (없으면 기본값 사용)
+            current_iteration: Current iteration number
+            current_metrics: Current performance metrics
+            current_changes: Changes made in current iteration
+            prev_metrics: Previous iteration metrics (None for first iteration)
+            docker_output: Docker execution output (last part)
+            primary_metrics: Override primary metrics list (uses default if None)
 
         Returns:
-            IterationAnalysis 객체
+            IterationAnalysis object
         """
-        # 1. 델타 계산
+        # 1. Calculate delta
         delta = self._calculate_delta(current_metrics, prev_metrics)
 
-        # 2. 개선 여부 판단
+        # 2. Determine improvement
         improved = self._check_improvement(delta, current_metrics, prev_metrics, primary_metrics)
 
-        # 3. LLM으로 이유와 교훈 생성
+        # 3. Generate reason and lessons via LLM
         reason, lessons = self._generate_analysis(
             current_iteration=current_iteration,
             current_metrics=current_metrics,
@@ -99,7 +99,7 @@ class IterationAnalyzerAgent:
             lessons=lessons,
         )
 
-        logger.info(f"[IterationAnalyzer] 분석 완료: improved={improved}, lessons={len(lessons)}개")
+        logger.info(f"[IterationAnalyzer] Analysis complete: improved={improved}, lessons={len(lessons)}")
         return analysis
 
     def _calculate_delta(
@@ -107,7 +107,7 @@ class IterationAnalyzerAgent:
         current: Dict[str, float],
         prev: Optional[Dict[str, float]],
     ) -> Optional[Dict[str, float]]:
-        """메트릭 변화량 계산."""
+        """Calculate metric changes."""
         if prev is None:
             return None
 
@@ -125,37 +125,37 @@ class IterationAnalyzerAgent:
         prev: Optional[Dict[str, float]],
         primary_metrics: Optional[List[str]] = None,
     ) -> Optional[bool]:
-        """성능 개선 여부 판단 (PRIMARY 메트릭 기준).
+        """Determine if performance improved (based on primary metrics).
 
-        EvolvingMemory.consecutive_failures와 동일한 기준 사용:
-        - PRIMARY 메트릭 (rmse, ari, auroc 등)으로만 판단
-        - 모든 메트릭을 동등하게 카운트하지 않음
+        Uses same criteria as EvolvingMemory.consecutive_failures:
+        - Only uses primary metrics (rmse, ari, auroc, etc.)
+        - Does not count all metrics equally
         """
         if prev is None or delta is None:
-            return None  # 첫 iteration
+            return None  # First iteration
 
-        # PRIMARY 메트릭 우선순위대로 확인
+        # Check primary metrics in priority order
         metrics_to_check = primary_metrics or PRIMARY_METRICS
         for primary_metric in metrics_to_check:
             if primary_metric in delta and primary_metric in current:
                 change = delta[primary_metric]
                 direction = METRIC_DIRECTION.get(primary_metric, 'higher')
 
-                # 유의미한 변화인지 확인 (노이즈 제거)
+                # Check if change is significant (noise filter)
                 if abs(change) < 0.0001:
-                    continue  # 변화 없음, 다음 메트릭 확인
+                    continue  # No change, check next metric
 
                 if direction == 'lower':
-                    # 낮을수록 좋음: 감소하면 개선
+                    # Lower is better: decrease means improvement
                     return change < 0
                 else:
-                    # 높을수록 좋음: 증가하면 개선
+                    # Higher is better: increase means improvement
                     return change > 0
 
         if primary_metrics is not None:
             return None
 
-        # PRIMARY 메트릭이 없으면 fallback: 모든 메트릭 카운트
+        # Fallback: count all metrics if no primary metrics found
         improvements = 0
         degradations = 0
 
@@ -178,7 +178,7 @@ class IterationAnalyzerAgent:
         elif degradations > improvements:
             return False
         else:
-            return None  # 변화 없음
+            return None  # No change
 
     def _generate_analysis(
         self,
@@ -190,15 +190,15 @@ class IterationAnalyzerAgent:
         improved: Optional[bool],
         docker_output: str,
     ) -> tuple[str, List[str]]:
-        """LLM을 사용하여 분석 이유와 교훈 생성."""
+        """Generate analysis reason and lessons using LLM."""
 
-        # 첫 iteration인 경우
+        # First iteration
         if prev_metrics is None:
             return self._generate_baseline_analysis(
                 current_metrics, current_changes, docker_output
             )
 
-        # 이후 iteration
+        # Subsequent iterations
         return self._generate_comparison_analysis(
             current_iteration=current_iteration,
             current_metrics=current_metrics,
@@ -316,7 +316,7 @@ Explain why this result occurred and provide actionable lessons for the next ite
         return self._call_llm(system_prompt, user_prompt)
 
     def _call_llm(self, system_prompt: str, user_prompt: str) -> tuple[str, List[str]]:
-        """LLM 호출하여 분석 결과 생성."""
+        """Call LLM to generate analysis results."""
         import json
 
         try:
@@ -325,9 +325,9 @@ Explain why this result occurred and provide actionable lessons for the next ite
                 HumanMessage(content=user_prompt),
             ])
 
-            # JSON 파싱
+            # Parse JSON
             content = response.content.strip()
-            # ```json ... ``` 형식 처리
+            # Handle ```json ... ``` format
             if content.startswith("```"):
                 content = content.split("```")[1]
                 if content.startswith("json"):
@@ -338,7 +338,7 @@ Explain why this result occurred and provide actionable lessons for the next ite
             reason = result.get("reason", "No analysis result")
             lessons = result.get("lessons", [])
 
-            # lessons가 문자열인 경우 리스트로 변환
+            # Convert string to list if needed
             if isinstance(lessons, str):
                 lessons = [lessons]
 
@@ -388,18 +388,18 @@ def analyze_iteration(
     docker_output: str = "",
     primary_metrics: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
-    """간편 함수: iteration 분석 후 딕셔너리 반환.
+    """Convenience function: analyze iteration and return dict.
 
     Args:
-        current_iteration: 현재 iteration 번호
-        current_metrics: 현재 성능 메트릭
-        current_changes: 변경 사항 (component, description)
-        prev_metrics: 이전 성능 메트릭
-        docker_output: Docker 출력
-        primary_metrics: PRIMARY 메트릭 리스트 override (없으면 기본값 사용)
+        current_iteration: Current iteration number
+        current_metrics: Current performance metrics
+        current_changes: Changes made (component, description)
+        prev_metrics: Previous performance metrics
+        docker_output: Docker output
+        primary_metrics: Override primary metrics list (uses default if None)
 
     Returns:
-        분석 결과 딕셔너리 (improved, delta, reason, lessons)
+        Analysis result dict (improved, delta, reason, lessons)
     """
     analyzer = IterationAnalyzerAgent()
     analysis = analyzer.analyze(

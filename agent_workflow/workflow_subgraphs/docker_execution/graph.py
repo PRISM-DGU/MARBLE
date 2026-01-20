@@ -136,15 +136,9 @@ def _run_with_realtime_output(cmd: list, phase_name: str = "") -> tuple:
 
 
 def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
-    """Docker 출력에서 성능 메트릭 추출.
+    """Extract performance metrics from Docker output.
 
-    Args:
-        output: Docker training stdout 출력
-
-    Returns:
-        추출된 메트릭 딕셔너리
-
-    지원 모델별 메트릭:
+    Supported metrics by model type:
         - Drug Response (DeepTTA, DRPreter): rmse, mse, mae, pearson, spearman
         - DTI (DrugBAN, HyperAttentionDTI, DLM-DTI): auroc, auprc
         - Spatial (DeepST, STAGATE): ari, nmi, silhouette
@@ -152,8 +146,7 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
     import re
     import ast
 
-    # 메트릭 이름 정규화 매핑 (Docker 출력 → 표준 이름)
-    # improved 판단을 위해 baseline과 동일한 메트릭 이름 사용
+    # Metric name normalization mapping (Docker output → standard names)
     METRIC_NAME_NORMALIZE = {
         'auc_mean': 'auroc',
         'auc': 'auroc',
@@ -165,8 +158,7 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
 
     metrics = {}
 
-    # === Step 1: Results: {...} 형식 직접 파싱 (최우선) ===
-    # 예: Results: {'accuracy': 0.787, 'auroc': 0.625, 'precision': 0.619, 'f1': 0.693, 'auprc': 0.365}
+    # === Step 1: Direct parsing of Results: {...} format (highest priority) ===
     results_match = re.search(r'Results:\s*(\{[^}]+\})', output)
     if results_match:
         try:
@@ -175,18 +167,17 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
             if isinstance(parsed, dict):
                 for k, v in parsed.items():
                     if isinstance(v, (int, float)):
-                        # 메트릭 이름 정규화 (auc_mean → auroc 등)
                         normalized_key = METRIC_NAME_NORMALIZE.get(k, k)
                         metrics[normalized_key] = float(v)
-                logger.info(f"[DOCKER_TEST] Results dict 직접 파싱 성공: {metrics}")
+                logger.info(f"[DOCKER_TEST] Results dict parsed successfully: {metrics}")
         except Exception as e:
-            logger.warning(f"[DOCKER_TEST] Results dict 파싱 실패: {e}")
+            logger.warning(f"[DOCKER_TEST] Results dict parsing failed: {e}")
 
-    # 이미 메트릭을 찾았으면 바로 반환
+    # Return early if metrics found
     if metrics:
         return metrics
 
-    # === Step 2: 기존 패턴 매칭 (fallback) ===
+    # === Step 2: Pattern matching fallback ===
     # Preprocess: convert np.float64(x) -> x for all numpy types
     output = re.sub(r'np\.float64\(([0-9.e+-]+)\)', r'\1', output)
     output = re.sub(r'np\.float32\(([0-9.e+-]+)\)', r'\1', output)
@@ -196,9 +187,9 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
     # Preprocess: convert dict format 'metric': value -> metric: value
     output = re.sub(r"'(\w+)':\s*([0-9.e+-]+)", r'\1: \2', output)
 
-    # 모델별 메트릭 패턴들 (대소문자 무시)
+    # Model-specific metric patterns (case insensitive)
     patterns = {
-        # === Drug Response 메트릭 ===
+        # === Drug Response Metrics ===
         'rmse': [
             r'RMSE[:\s=]+([0-9.]+)',
             r'rmse[:\s=]+([0-9.]+)',
@@ -231,7 +222,7 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
             r'R\^2[:\s=]+([0-9.]+)',
         ],
 
-        # === DTI 메트릭 ===
+        # === DTI Metrics ===
         'auroc': [
             r'AUROC[:\s=]+([0-9.]+)',
             r'auroc[:\s=]+([0-9.]+)',
@@ -245,7 +236,7 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
             r'Test AUPRC[:\s=]+([0-9.]+)',
         ],
 
-        # === Spatial 메트릭 ===
+        # === Spatial Metrics ===
         'ari': [
             r'ARI[:\s=]+([0-9.]+)',
             r'ari[:\s=]+([0-9.]+)',
@@ -261,7 +252,7 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
             r'silhouette[:\s=]+([0-9.]+)',
         ],
 
-        # === 공통 메트릭 ===
+        # === Common Metrics ===
         'accuracy': [
             r'Accuracy[:\s=]+([0-9.]+)',
             r'accuracy[:\s=]+([0-9.]+)',
@@ -287,13 +278,13 @@ def _extract_metrics_from_output(output: str) -> Dict[str, Any]:
             matches = re.findall(pattern, output, re.IGNORECASE)
             if matches:
                 try:
-                    # 마지막 매칭값 사용 (최종 결과일 가능성 높음)
+                    # Use last match (likely final result)
                     metrics[metric_name] = float(matches[-1])
                     break
                 except ValueError:
                     continue
 
-    logger.info(f"[DOCKER_TEST] 추출된 메트릭: {metrics}")
+    logger.info(f"[DOCKER_TEST] Extracted metrics: {metrics}")
     return metrics
 
 
@@ -385,7 +376,7 @@ def docker_test_node(state: MARBLEState) -> Dict[str, Any]:
                 "processing_logs": ["[DOCKER_TEST] Training failed"],
             }
 
-        # Success! 메트릭 추출 (stdout + stderr 모두 확인)
+        # Success! Extract metrics from combined output
         logger.info("[DOCKER_TEST] Training passed!")
         combined_output = (stdout or "") + "\n" + (stderr or "")
         metrics = _extract_metrics_from_output(combined_output)
@@ -394,8 +385,8 @@ def docker_test_node(state: MARBLEState) -> Dict[str, Any]:
             "docker_test_success": True,
             "docker_test_error": None,
             "docker_test_round": docker_test_round,
-            "docker_test_output": stdout[-5000:] if stdout else "",  # 마지막 5000자 저장
-            "iteration_metrics": metrics,  # 추출된 메트릭
+            "docker_test_output": stdout[-5000:] if stdout else "",
+            "iteration_metrics": metrics,
             "processing_logs": ["[DOCKER_TEST] Success!"],
         }
 
