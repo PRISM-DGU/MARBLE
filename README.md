@@ -1,6 +1,6 @@
 # MARBLE
 
-**M**ulti-**A**gent **R**esearch for **B**ioinformatics **L**earning and **E**nhancement
+**M**ulti-**A**gent **R**easoning for **B**ioinformatics **L**earning and **E**volution
 
 MARBLE is a LangGraph-based multi-agent system for automating drug response prediction research.
 
