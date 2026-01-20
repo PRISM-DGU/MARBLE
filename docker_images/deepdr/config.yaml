@@ -1,0 +1,113 @@
+# DeepDR Configuration
+# Optimal configuration based on DeepDR paper benchmarks
+# Best combination: EXP + Graph + MPG + DNN (R2 = 0.7688)
+
+# Never touch
+data:
+  base_path: /workspace/datasets/shared/  # Never touch
+  drug_response_file: drug_response_IC50.csv  # Never touch
+  drug_smiles_file: drug_smiles.csv  # Never touch
+  gene_expression_file: gene_expression.txt  # Never touch
+  preprocessing:
+    cache_dir: /workspace/datasets/deepdr/  # Never touch
+  excluded_cells: []  # Never touch
+  split_ratio: 0.8  # Never touch
+
+# Never touch
+data_dimensions:
+  raw:
+    gene_expression_dim: 6163  # DeepDR uses 6163 genes
+    drug_ecfp_dim: 512  # ECFP fingerprint bits (legacy)
+    drug_graph_features: 78  # Atom feature dimension for graph
+  processed:
+    drug_embedding_dim: 64  # MPG output dimension
+    cell_embedding_dim: 100
+
+# Never touch
+model:
+  name: DeepDR
+  version: "2.0"
+
+# OPTIMAL: Graph + MPG Drug Encoder (best R2 = 0.7688)
+  drug_encoder:
+    type: drug_encoder_deepdr  # Registry: drug_encoder_deepdr, drug_encoder_other
+    input:
+      dim: 78  # Atom feature dimension (auto-calculated from ATOM_FEATURES)
+    architecture:
+      # MPG (Message Passing Graph) parameters
+      mpg_dim: 768  # MPG embedding dimension (default from DeepDR)
+      freeze: false  # Set true to use pre-computed MPG features
+      use_conv: true  # Use GCNConv as output layer
+      num_layer: 5  # Number of GCN layers
+      dropout: 0.0  # Dropout in GCN layers
+      pool_type: mean  # Pooling type: mean, max, attention, mix
+      pretrained_path: null  # Path to pre-trained MolGNet weights
+      mpg_features_path: null  # Path to pre-computed MPG features dict
+    output:
+      dim: 64  # Output embedding dimension (following DeepDR example)
+
+# OPTIMAL: EXP + DNN Cell Encoder
+  cell_encoder:
+    type: cell_encoder_deepdr  # Registry: cell_encoder_deepdr, cell_encoder_other
+    input:
+      dim: 6163  # Gene expression dimension (Never touch)
+    architecture:
+      hidden_layers: [2048, 512]  # Can touch
+      dropout: 0.1  # Can touch
+      use_dae: false  # Can touch - enable DAE pretrained weights
+      dae_weights_path: null  # Can touch - path to pretrained DAE weights
+    output:
+      dim: 100  # Never touch
+
+# OPTIMAL: DNN Fusion Module with Graph Pooling
+  decoder:
+    type: decoder_deepdr  # Registry: decoder_deepdr, decoder_other
+    architecture:
+      fusion_dim: 164  # Can touch (drug_dim + cell_dim = 64 + 100)
+      dropout: 0.1  # Can touch
+      use_batch_norm: false  # Can touch
+      pool_type: mean  # Graph pooling: mean, max, attention, mix
+      num_heads: 8  # For attention pooling
+      concat: true  # true: concat, false: add
+
+# Never touch
+  predictor:
+    type: regression  # Never touch
+    input:
+      dim: 164  # Never touch (matches fusion_dim)
+    architecture:
+      hidden_layers: [512, 256, 128]  # Following DeepDR FusionModule.DNN
+      dropout: 0.1  # Can touch
+      activation: relu  # Never touch
+    output:
+      dim: 1  # Never touch
+
+training:
+  batch_size: 64  # Can touch
+  epochs: 50  # Can touch
+  learning_rate: 0.0001  # DeepDR uses 1e-4 for Graph+MPG
+  weight_decay: 0.00001  # Can touch
+  early_stopping_patience: 10  # Can touch
+  device: cuda  # Never touch
+  seed: 42  # Never touch
+
+# Never touch
+evaluation:
+  metrics:
+    - mse
+    - rmse
+    - pearson
+    - spearman
+    - r2
+  batch_size: 64
+
+# Never touch
+output:
+  result_path: ./results/
+  checkpoint_dir: ./checkpoints/
+  log_file: null
+
+# Never touch
+logging:
+  level: INFO
+  log_file: ./logs/deepdr_training.log

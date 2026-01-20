@@ -1,0 +1,118 @@
+# Never touch
+data:
+  base_path: /workspace/datasets/shared/ # Never touch
+  drug_response_file: drug_response_IC50.csv # Never touch
+  drug_smiles_file: drug_smiles.csv # Never touch
+  gene_expression_file: gene_expression.txt # Never touch
+  preprocessing:
+    cache_dir: /workspace/datasets/deeptta/ # Never touch
+  excluded_cells: [] # Never touch
+  split_ratio: 0.8 # Never touch
+  vocab_dir: /workspace/datasets/deeptta/ # Never touch
+
+# Never touch
+data_dimensions:
+  raw:
+    drug_node_features: 5
+    gene_expression_dim: 17737
+    drug_vocab_size: 3000
+    drug_sequence_length: 100
+    num_genes: 2188
+    gene_features: 1
+  processed:
+    drug_embedding_dim: 128
+    cell_embedding_dim: 128
+
+# Never touch
+output_files:
+  vocab_subdir: ''
+  bpe_vocab: deeptta_drug_encoder_bpe_vocab.txt
+  bpe_subword_map: deeptta_drug_encoder_bpe_mapping.csv
+
+# Never touch
+model:
+  name: DeepTTA
+  version: "1.0"
+
+# Can touch
+  drug_encoder:
+    type: drug_encoder_deeptta  # Registry: drug_encoder_deeptta, drug_encoder_other
+    input:
+      dim: 3000 # Never touch
+      vocab_size: 3000 # Never touch
+    architecture:
+      hidden_dim: 128 # Can touch
+      embedding_dim: 128 # Never touch
+      n_layers: 2 # Can touch
+      n_heads: 8 # Can touch
+      intermediate_size: 512 # Can touch
+      dropout: 0.1 # Can touch
+      attention_dropout: 0.1 # Can touch
+      hidden_dropout: 0.1 # Can touch
+      max_position: 100 # Never touch
+    output:
+      dim: 128 # Never touch
+
+# Can touch
+  cell_encoder:
+    type: cell_encoder_deeptta  # Registry: cell_encoder_deeptta, cell_encoder_other
+    input:
+      dim: 17737 # Never touch
+    architecture:
+      hidden_dim: 128 # Never touch
+      hidden_layers: [4096, 2048, 512] # Can touch
+      n_layers: 3 # Can touch
+      dropout: 0.1 # Can touch
+    output:
+      dim: 128 # Never touch
+
+# Can touch
+  decoder:
+    type: decoder_deeptta  # Registry: decoder_deeptta, decoder_other
+    architecture:
+      fusion_dim: 256 # Can touch
+      dropout: 0.1 # Can touch
+    output:
+      dim: 256 # Never touch
+
+# Never touch
+  predictor:
+    type: regression # Never touch
+    input:
+      dim: 256 # Never touch
+    architecture:
+      hidden_layers: [128, 64] # Never touch
+      dropout: 0.1 # Never touch
+      activation: relu # Never touch
+    output:
+      dim: 1 # Never touch
+
+training:
+  batch_size: 32 # Can touch
+  epochs: 50 # Never touch
+  learning_rate: 0.001 # Can touch
+  weight_decay: 0.00001 # Can touch
+  early_stopping_patience: 10 # Can touch
+  device: cuda # Never touch
+  seed: 42 # Never touch
+
+# Never touch
+evaluation:
+  metrics:
+    - mse
+    - rmse
+    - pearson
+    - spearman
+    - ci
+  batch_size: 32
+
+# Never touch
+output:
+  result_path: ./results/
+  checkpoint_dir: ./checkpoints/
+  log_file: null
+
+# Never touch
+logging:
+  level: INFO
+  log_file: ./logs/deeptta_training.log

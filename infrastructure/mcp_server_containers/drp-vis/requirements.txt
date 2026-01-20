@@ -1,0 +1,22 @@
+# DRP VIS MCP Requirements
+# Drug Response Prediction Visualization MCP Server
+
+# FastMCP Framework
+fastmcp>=0.2.0
+
+# Chemistry & Molecular Visualization
+rdkit>=2023.9.1
+
+# Data Science & Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# Utilities
+pillow>=10.0.0
+pyyaml>=6.0
+
+# LLM Integration (for summary generation)
+openai>=1.0.0

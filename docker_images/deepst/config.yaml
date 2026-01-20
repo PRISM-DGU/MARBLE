@@ -1,0 +1,100 @@
+# Never touch
+data:
+  base_path: /workspace/datasets/spatial/Mouse_Brain # Never touch
+  platform: Visium # Never touch
+  preprocessing:
+    highly_variable: true # Can touch
+    n_top_genes: 3000 # Can touch
+    pca_n_comps: 200 # Never touch (encoder in_dim과 연결)
+  spatial_network:
+    method: KDTree # Never touch
+    k: 12 # Can touch
+    rad_cutoff: 150 # Can touch
+  augmentation:
+    enabled: true # Never touch
+    spatial_type: BallTree # Never touch
+    use_morphological: true # Can touch - Set to true to use H&E image features
+    adjacent_weight: 0.3 # Can touch
+    neighbour_k: 4 # Can touch
+    spatial_k: 30 # Can touch
+    # Image feature extraction settings (only used when use_morphological: true)
+    image:
+      crop_size: 50 # Can touch - Size of spot crop from H&E image (pixels)
+      target_size: 224 # Never touch - CNN input size
+      cnn_type: ResNet50 # Can touch - Options: ResNet50, Resnet152, Vgg19, Vgg16, DenseNet121
+      pca_components: 50 # Can touch - PCA dimensions for image features
+
+# Never touch
+model:
+  name: DeepST
+  version: "1.0"
+
+# Can touch
+  encoder:
+    type: encoder_deepst
+    architecture:
+      in_dim: 200 # Never touch (pca_n_comps와 동일해야 함)
+      hidden_dims: [32, 20] # Can touch
+      dropout: 0.01 # Can touch
+
+# Can touch
+  graph_encoder:
+    type: graph_encoder_deepst
+    architecture:
+      in_dim: 20 # Never touch
+      hidden_dim: 64 # Can touch
+      out_dim: 8 # Never touch
+      conv_type: GATConv # Can touch
+      dropout: 0.01 # Can touch
+
+# Can touch
+  decoder:
+    type: decoder_deepst
+    architecture:
+      in_dim: 28 # Never touch
+      hidden_dims: [32] # Can touch
+      out_dim: 200 # Never touch
+      dropout: 0.01 # Can touch
+
+  dec_cluster:
+    n_clusters: 20 # Can touch
+    alpha: 0.9 # Can touch
+
+training:
+  pre_epochs: 500 # Can touch
+  epochs: 500 # Can touch
+  learning_rate: 0.001 # Can touch
+  weight_decay: 0.0001 # Can touch
+  gradient_clipping: 5.0 # Can touch
+  device: cuda # Never touch
+  seed: 0 # Never touch
+  loss_weights:
+    mse: 10.0 # Can touch
+    bce_kld: 0.1 # Can touch
+    kl: 1.0 # Can touch
+    domain: 1.0 # Can touch
+
+clustering:
+  method: leiden # Never touch
+  n_clusters: 15 # Never touch
+  refine: true # Can touch
+  refine_shape: hexagon # Can touch
+
+# Never touch
+evaluation:
+  metrics:
+    - ari
+    - nmi
+    - silhouette
+
+# Never touch
+output:
+  result_path: ./results/
+  checkpoint_dir: ./checkpoints/
+  embedding_key: DeepST_embed
+  save_model: false
+
+# Never touch
+logging:
+  level: INFO
+  log_file: ./logs/deepst_training.log

@@ -1,0 +1,51 @@
+# Enhanced ArXiv MCP with Semantic Search
+FROM python:3.10-slim AS base
+
+# Fixed default user (runtime --user flag will override)
+ENV MCP_USER=mcp-user
+ENV MCP_UID=1000
+ENV MCP_GID=1000
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    poppler-utils \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create default non-root user
+RUN groupadd -g ${MCP_GID} ${MCP_USER} && \
+    useradd -m -u ${MCP_UID} -g ${MCP_GID} ${MCP_USER}
+
+# Set up working directory
+WORKDIR /app
+
+# Copy source files
+COPY --chown=${MCP_USER}:${MCP_USER} src/ /app/src/
+COPY --chown=${MCP_USER}:${MCP_USER} requirements.txt /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Set environment variables for caching
+ENV PAPERS_DIR=/workspace/papers
+ENV EMBEDDINGS_DIR=/workspace/embeddings
+ENV CHROMA_DB_PATH=/workspace/chromadb
+ENV PYTHONPATH=/app
+ENV TRANSFORMERS_CACHE=/workspace/.cache/transformers
+ENV HF_HOME=/workspace/.cache/huggingface
+ENV HF_HUB_CACHE=/workspace/.cache/huggingface/hub
+
+# Create directories for data storage and set ownership
+RUN mkdir -p /workspace/papers /workspace/embeddings /workspace/chromadb /workspace/.cache/huggingface && \
+    chown -R ${MCP_USER}:${MCP_USER} /workspace
+
+# Switch to default non-root user (will be overridden by --user flag at runtime)
+USER ${MCP_USER}
+
+# Pre-load the sentence transformer model to avoid runtime delays
+RUN python /app/src/preload_model.py
+
+# Default command - run the FastMCP server
+ENTRYPOINT ["python", "/app/src/server.py"]

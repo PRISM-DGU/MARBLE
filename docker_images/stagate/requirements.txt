@@ -1,0 +1,37 @@
+# STAGATE Model Requirements
+# Python 3.10 + CUDA 11.8
+
+# Core scientific packages
+numpy>=2.2.0
+scipy>=1.15.0
+pandas>=2.3.0
+scikit-learn>=1.7.0
+
+# Visualization
+matplotlib>=3.10.0
+seaborn>=0.13.0
+
+# Single-cell analysis
+scanpy>=1.11.0
+anndata>=0.11.0
+
+# Graph / Clustering
+igraph>=1.0.0
+leidenalg>=0.11.0
+networkx>=3.4.0
+
+# Dimensionality reduction
+umap-learn>=0.5.9
+numba>=0.63.0
+pynndescent>=0.5.13
+
+# Deep learning utilities
+h5py>=3.15.0
+tqdm>=4.67.0
+
+# STAGATE specific (install from GitHub)
+git+https://github.com/QIFEIDKN/STAGATE_pyG.git
+
+# Misc
+PyYAML>=6.0
+joblib>=1.5.0

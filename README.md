@@ -1,2 +1,2 @@
 # MARBLE
-MARBLE: Multi-Agent Reasoning for Bioinformatics Learning and Evolution
+Multi-Agent Research for Bioinformatics Learning and Enhancement

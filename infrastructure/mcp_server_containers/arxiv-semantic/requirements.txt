@@ -1,0 +1,26 @@
+# Core MCP dependencies
+fastmcp>=2.0.0
+
+# ArXiv functionality
+arxiv>=2.1.0
+pymupdf4llm>=0.0.17
+
+# Semantic search and embeddings
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+torch>=2.0.0
+
+# PDF processing
+PyMuPDF>=1.23.0
+pillow>=10.0.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+tqdm>=4.66.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+aiofiles>=23.0.0
+httpx>=0.24.0

@@ -1,0 +1,164 @@
+# Pyenv
+.lock
+.python-version
+api_key.md
+Youngseo.md
+datasets/
+execution_outputs/
+datasets/spatial/Mouse_Brain/spot_tiles
+datasets/spatial/Mouse_Brain/spot_crops
+# Byte-compiled / optimized / DLL files
+hf_cache/
+__pycache__/
+*.py[cod]
+*$py.class
+output/
+# C extensions
+*.so
+# backup/
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+backup/
+
+# Virtual environments
+.venv
+venv/
+env/
+ENV/
+.env
+.env.local
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.langgraph_api
+
+# Node.js dependencies (MCP servers)
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript build outputs
+dist/
+*.tsbuildinfo
+
+# Python build outputs
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ignore datasets directory (large files)
+# datasets/
+
+# Ignore Claude config
+.claude/
+.claude_backup/
+CLAUDE.md
+AGENTS.md
+.serena/
+
+experiments/
+experiments/arxiv
+del/
+.cache
+# temporary ignore files
+experiments/deeptta_refined_backup*/
+# Backup directories only (allow main working directories for Serena MCP access)
+experiments/drp_framework_refined_*_backup_*
+
+# Origin model directories (reference implementations)
+models/
+models/DRPreter_origin/
+models/DeepTTA_origin/
+models/DRPreter/data/protein.links.v12.0.min900.csv.gz
+models/DRPreter/data/protein.links.v12.0.score990plus.csv
+experiments/reports/deeptta
+experiments/reports/deeptta/debate_transcript.md
+experiments/reports/deeptta/final_debate_report.md
+
+# Pycharm
+./idea
+.idea
+experiments_backup
+experiments/drp_framework/checkpoints
+experiments/drp_framework/input_raw_data
+experiments/drp_framework/runs
+claudedocs
+
+# Legacy and backup directories
+legacy/
+input_raw_data/
+scripts/
+
+
+/experiments/experiments/dipk/checkpoints/
+/experiments/experiments/drpreter/results/
+/experiments/experiments/drpreter/weights/
+
+# Execution results and logs
+Results/
+execution_logs/
+execution_reports/
+*.log
+/experiments/experiments/deepdr/checkpoints/
+/experiments/experiments/deeptta/checkpoints/
+/experiments/experiments/drp_target/checkpoints/
+/experiments/experiments/drpreter/data/
+
+# Model checkpoints and training artifacts
+checkpoints/
+runs/
+*.pth
+*.pt
+*.ckpt
+# *.h5
+
+# TensorBoard logs
+events.out.tfevents.*
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local development and testing files
+run_model_execution.py
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.bak
+*~
+docker_images/amdgt/dgl_2.5.0_cu124.tar.gz

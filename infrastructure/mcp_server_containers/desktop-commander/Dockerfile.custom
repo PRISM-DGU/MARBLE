@@ -1,0 +1,37 @@
+FROM node:lts-alpine
+
+# Build arguments for dynamic user creation
+ARG USER_NAME=default_user
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# Create group and user dynamically (ignore errors if already exists)
+RUN addgroup -g ${USER_GID} appgroup 2>/dev/null || true && \
+    adduser -u ${USER_UID} -G appgroup -D -s /bin/bash ${USER_NAME} 2>/dev/null || true
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --ignore-scripts
+
+RUN npm rebuild @vscode/ripgrep
+
+COPY . .
+
+RUN npm run build
+
+# Create workspace mount point and home directory with proper permissions
+RUN mkdir -p /workspace && \
+    mkdir -p /home/${USER_NAME} && \
+    chown -R ${USER_UID}:${USER_GID} /usr/src/app && \
+    chown -R ${USER_UID}:${USER_GID} /workspace && \
+    chown -R ${USER_UID}:${USER_GID} /home/${USER_NAME} 2>/dev/null || true
+
+# Switch to dynamic user
+USER ${USER_UID}:${USER_GID}
+
+# Set HOME dynamically
+ENV HOME="/home/${USER_NAME}"
+
+CMD [ "node", "dist/index.js" ]

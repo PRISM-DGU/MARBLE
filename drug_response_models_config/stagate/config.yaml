@@ -1,0 +1,65 @@
+# Never touch
+data:
+  base_path: /workspace/datasets/spatial/Mouse_Brain # Never touch
+  datatype: 10X # Never touch
+  preprocessing:
+    highly_variable: true #true or false
+    n_top_genes: 3000 # Can touch
+  spatial_network:
+    method: knn # Can touch, knn or radius
+    k_cutoff: 6 # Can touch
+    rad_cutoff: 150 # Can touch
+
+# Never touch
+model:
+  name: STAGATE
+  version: "1.0"
+
+
+  encoder:
+    type: encoder_stagate_gat
+    architecture:
+      in_dim: 3000 # Never touch
+      hidden_dim: 512 # Can touch
+      out_dim: 30 # Never touch
+      heads: 1 # Can touch
+      dropout: 0.0 # Can touch
+
+# Can touch
+  decoder:
+    type: decoder_stagate_gat
+    architecture:
+      in_dim: 30 # Never touch
+      hidden_dim: 512 # Can touch
+      out_dim: 3000 # Never touch
+      heads: 1 # Can touch
+      dropout: 0.0 # Can touch
+
+training:
+  epochs: 1000 # Can touch
+  learning_rate: 0.001 # Can touch
+  weight_decay: 0.0001 # Can touch
+  gradient_clipping: 5.0 # Can touch
+  device: cuda # Never touch
+  seed: 42 # Never touch
+
+
+clustering:
+  method: leiden # Never touch
+  n_clusters: 15 # Never touch
+
+
+# Never touch
+evaluation:
+  metrics:
+    - ari
+    - nmi
+    - silhouette
+output:
+  result_path: ./results/
+  checkpoint_dir: ./checkpoints/
+  embedding_key: STAGATE
+  save_reconstruction: false
+logging:
+  level: INFO
+  log_file: ./logs/stagate_training.log

@@ -1,0 +1,89 @@
+{
+  "servers": {
+    "mcp-sequential": {
+      "enabled": true,
+      "container_name": "mcp-sequential",
+      "command": "node",
+      "args": ["dist/index.js"],
+      "transport": "stdio",
+      "description": "Sequential thinking MCP server for step-by-step reasoning"
+    },
+    "mcp-desktop-commander": {
+      "enabled": true,
+      "container_name": "mcp-desktop-commander", 
+      "command": "node",
+      "args": ["dist/index.js"],
+      "transport": "stdio",
+      "description": "Desktop commander MCP server for file operations",
+      "blocked_tools": [
+        "edit_block",
+        "interact_with_process",
+        "move_file"
+      ]
+    },
+    "mcp-context7": {
+      "enabled": true,
+      "container_name": "mcp-context7",
+      "command": "node", 
+      "args": ["dist/index.js"],
+      "transport": "stdio",
+      "description": "Context7 MCP server for real-time library documentation"
+    },
+    "mcp-serena": {
+      "enabled": true,
+      "container_name": "mcp-serena",
+      "command": ".venv/bin/serena-mcp-server",
+      "args": ["--transport", "stdio", "--project", "/workspace"],
+      "transport": "stdio",
+      "description": "Serena MCP server for advanced code analysis",
+      "blocked_tools": [
+        "activate_project",
+        "check_onboarding_performed",
+        "get_active_project",
+        "get_current_config",
+        "initial_instructions",
+        "onboarding",
+        "prepare_for_new_conversation",
+        "read_memory",
+        "write_memory",
+        "list_memories"
+      ]
+    },
+    "mcp-arxiv-semantic": {
+      "enabled": true,
+      "container_name": "mcp-arxiv-semantic",
+      "command": "python",
+      "args": ["/app/src/server.py"],
+      "transport": "stdio",
+      "description": "Enhanced ArXiv MCP with semantic search and deep paper analysis",
+      "env": {
+        "PAPERS_DIR": "/workspace/papers",
+        "EMBEDDINGS_DIR": "/workspace/embeddings",
+        "CHROMA_DB_PATH": "/workspace/chromadb",
+        "TRANSFORMERS_CACHE": "/workspace/.cache"
+      }
+    },
+    "mcp-execution": {
+      "enabled": true,
+      "container_name": "mcp-execution",
+      "command": "python",
+      "args": ["/app/execution/server.py"],
+      "transport": "stdio",
+      "description": "Unified execution server for drug response prediction models with isolated container execution"
+    },
+    "drp-vis": {
+      "enabled": true,
+      "container_name": "drp-vis",
+      "command": "python",
+      "args": ["/app/src/server.py"],
+      "transport": "stdio",
+      "description": "DRP Visualization MCP server for result visualization and analysis"
+    }
+  },
+  "settings": {
+    "connection_timeout": 60,
+    "retry_count": 5,
+    "log_level": "info",
+    "model_loading_timeout": 600
+  }
+}
