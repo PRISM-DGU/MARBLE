@@ -4,6 +4,8 @@
 
 MARBLE is an execution-stable autonomous framework for bioinformatics model refinement that utilizes multi-agent debate and performance-grounded reasoning.
 
+![MARBLE Overview](docs/overview.png)
+
 ## Requirements
 
 - Python 3.11+
@@ -139,6 +141,3 @@ MARBLE/
 └── infrastructure/          # MCP server containers
 ```
 
-## License
-
-MIT License
