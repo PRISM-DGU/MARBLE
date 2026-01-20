@@ -83,7 +83,18 @@ USER_ID=$(whoami)
 langgraph dev --allow-blocking --no-reload --tunnel --port 3001
 ```
 
-### 2. Execute MARBLE (in a new terminal)
+### 2. Execute MARBLE
+
+#### Option A: LangSmith UI (Recommended)
+
+1. Open the LangSmith Studio URL displayed in the terminal after starting the server
+2. In the `messages` input field, enter:
+   ```
+   --task build --model stagate --iter 50 --patience 10 --weight 0.1
+   ```
+3. Click "Submit" to start the run
+
+#### Option B: CLI
 
 ```bash
 curl -X POST http://localhost:3001/runs/wait \
@@ -104,6 +115,16 @@ curl -X POST http://localhost:3001/runs/wait \
     }
   }'
 ```
+
+### 3. Resume Interrupted Runs
+
+If a run is interrupted and you want to continue from where it stopped:
+
+```
+--task continue --model stagate --iter {stopped_iter} --patience 10 --weight 0.1
+```
+
+Replace `{stopped_iter}` with the iteration number where the run was interrupted.
 
 ## Project Structure
 
