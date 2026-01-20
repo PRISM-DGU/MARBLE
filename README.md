@@ -2,7 +2,7 @@
 
 **M**ulti-**A**gent **R**easoning for **B**ioinformatics **L**earning and **E**volution
 
-MARBLE is a LangGraph-based multi-agent system for automating drug response prediction research.
+MARBLE is an execution-stable autonomous framework for bioinformatics model refinement that utilizes multi-agent debate and performance-grounded reasoning.
 
 ## Requirements
 
@@ -78,7 +78,7 @@ USER_ID=$(whoami)
 ## Running MARBLE
 
 ```bash
-langgraph dev
+langgraph dev --allow-blocking --no-reload --tunnel --port 3001
 ```
 
 ## Project Structure
