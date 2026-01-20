@@ -1,12 +1,7 @@
 # Pyenv
 .lock
 .python-version
-api_key.md
-Youngseo.md
-datasets/
 execution_outputs/
-datasets/spatial/Mouse_Brain/spot_tiles
-datasets/spatial/Mouse_Brain/spot_crops
 # Byte-compiled / optimized / DLL files
 hf_cache/
 __pycache__/
@@ -94,16 +89,6 @@ experiments/deeptta_refined_backup*/
 # Backup directories only (allow main working directories for Serena MCP access)
 experiments/drp_framework_refined_*_backup_*
 
-# Origin model directories (reference implementations)
-models/
-models/DRPreter_origin/
-models/DeepTTA_origin/
-models/DRPreter/data/protein.links.v12.0.min900.csv.gz
-models/DRPreter/data/protein.links.v12.0.score990plus.csv
-experiments/reports/deeptta
-experiments/reports/deeptta/debate_transcript.md
-experiments/reports/deeptta/final_debate_report.md
-
 # Pycharm
 ./idea
 .idea
@@ -118,15 +103,6 @@ legacy/
 input_raw_data/
 scripts/
 
-# Execution results and logs
-Results/
-execution_logs/
-execution_reports/
-*.log
-/experiments/experiments/deepdr/checkpoints/
-/experiments/experiments/deeptta/checkpoints/
-/experiments/experiments/drp_target/checkpoints/
-/experiments/experiments/drpreter/data/
 
 # Model checkpoints and training artifacts
 checkpoints/
