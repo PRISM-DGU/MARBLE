@@ -1,4 +1,4 @@
-# MARBLE
+<img width="962" height="246" alt="image" src="https://github.com/user-attachments/assets/76e68b7a-116f-464b-9560-0bc9057e15ca" /># MARBLE
 
 **M**ulti-**A**gent **R**easoning for **B**ioinformatics **L**earning and **E**volution
 
@@ -149,8 +149,10 @@ MARBLE/
 ├── docker_images/           # Drug response model containers
 └── infrastructure/          # MCP server containers
 ```
+## Supplementary Information
+
+Supplementary materials for the paper are available [here](https://drive.google.com/drive/folders/1NpdWpoRU5MSNTGGHkYOpr-2GtORaL7t2?usp=drive_link).
 
 ## Sample Report
 
 A sample execution report is available [here](https://sslim-aidrug.github.io/MARBLE/).
-
