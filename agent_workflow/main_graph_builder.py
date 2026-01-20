@@ -593,20 +593,7 @@ async def initialize_system():
                 from external.open_deep_research.src.open_deep_research.utils_patch import patch_odr_utils, set_autodrp_tool_cache
 
                 patch_odr_utils()
-
-                arxiv_container = None
-                if mcp_manager.docker_client:
-                    try:
-                        containers = mcp_manager.docker_client.containers.list()
-                        for container in containers:
-                            if "arxiv-semantic" in container.name:
-                                arxiv_container = container.name
-                                logger.debug(f"Found ArXiv container: {arxiv_container}")
-                                break
-                    except Exception as e:
-                        logger.debug(f"Could not check ArXiv container: {e}")
-
-                set_autodrp_tool_cache(mcp_manager.tools, arxiv_container)
+                set_autodrp_tool_cache(mcp_manager.tools, None)
                 logger.debug("[SYSTEM] ODR bridge applied")
 
             except (ImportError, Exception):

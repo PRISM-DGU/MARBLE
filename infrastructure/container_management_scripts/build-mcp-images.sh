@@ -35,7 +35,6 @@ echo "🏷️ User ID for tagging: $USER_ID"
 DESKTOP_IMAGE_TAG="desktop-commander:AutoDRP-${USER_ID}"
 SERENA_IMAGE_TAG="serena:AutoDRP-${USER_ID}"
 DRP_VIS_IMAGE_TAG="drp-vis-mcp:AutoDRP-${USER_ID}"
-ARXIV_SEMANTIC_IMAGE_TAG="arxiv-semantic:AutoDRP-${USER_ID}"
 SEQUENTIAL_IMAGE_TAG="mcp/sequentialthinking:AutoDRP-${USER_ID}"
 CONTEXT7_IMAGE_TAG="mcp/context7:AutoDRP-${USER_ID}"
 
@@ -46,7 +45,6 @@ echo "🏷️ Image Tags (all user-specific):"
 echo "   Desktop: $DESKTOP_IMAGE_TAG"
 echo "   Serena: $SERENA_IMAGE_TAG"
 echo "   DRP-VIS: $DRP_VIS_IMAGE_TAG"
-echo "   ArXiv-Semantic: $ARXIV_SEMANTIC_IMAGE_TAG"
 echo "   Sequential: $SEQUENTIAL_IMAGE_TAG"
 echo "   Context7: $CONTEXT7_IMAGE_TAG"
 echo ""
@@ -286,50 +284,6 @@ else
         "$SERENA_IMAGE_TAG" \
         "Serena"; then
         echo "❌ Build failed, exiting"
-        exit 1
-    fi
-fi
-
-echo ""
-
-# Build ArXiv-Semantic MCP image
-echo "========================================="
-echo "🔬 ArXiv-Semantic MCP Image"
-echo "========================================="
-
-if check_image_exists "$ARXIV_SEMANTIC_IMAGE_TAG"; then
-    echo "ℹ️ Image already exists: $ARXIV_SEMANTIC_IMAGE_TAG"
-
-    if [ "$FORCE_REBUILD" = true ]; then
-        echo "🔄 Force rebuild requested"
-        build_image \
-            "$MCP_CONTAINERS_DIR/arxiv-semantic/Dockerfile.custom" \
-            "$MCP_CONTAINERS_DIR/arxiv-semantic/" \
-            "$ARXIV_SEMANTIC_IMAGE_TAG" \
-            "ArXiv-Semantic MCP"
-    elif [ "$SKIP_EXISTING" = true ]; then
-        echo "⏭️ Skipping existing image"
-    else
-        read -p "Rebuild ArXiv-Semantic MCP image? (y/N): " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            build_image \
-                "$MCP_CONTAINERS_DIR/arxiv-semantic/Dockerfile.custom" \
-                "$MCP_CONTAINERS_DIR/arxiv-semantic/" \
-                "$ARXIV_SEMANTIC_IMAGE_TAG" \
-                "ArXiv-Semantic MCP"
-        else
-            echo "⏭️ Keeping existing image"
-        fi
-    fi
-else
-    echo "🆕 Image not found, building..."
-    if ! build_image \
-        "$MCP_CONTAINERS_DIR/arxiv-semantic/Dockerfile.custom" \
-        "$MCP_CONTAINERS_DIR/arxiv-semantic/" \
-        "$ARXIV_SEMANTIC_IMAGE_TAG" \
-        "ArXiv-Semantic MCP"; then
-        echo "❌ Failed to build ArXiv-Semantic MCP image"
         exit 1
     fi
 fi

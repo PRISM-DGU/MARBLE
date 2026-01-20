@@ -18,11 +18,10 @@ SEQUENTIAL_NAME="mcp-sequential_${USER_ID}"
 DESKTOP_NAME="mcp-desktop-commander_${USER_ID}"
 CONTEXT7_NAME="mcp-context7_${USER_ID}"
 SERENA_NAME="mcp-serena_${USER_ID}"
-ARXIV_SEMANTIC_NAME="mcp-arxiv-semantic_${USER_ID}"
 DRP_VIS_NAME="drp-vis-mcp_${USER_ID}"
 
 # All MCP containers list
-ALL_CONTAINERS="$SEQUENTIAL_NAME $DESKTOP_NAME $CONTEXT7_NAME $SERENA_NAME $ARXIV_SEMANTIC_NAME $DRP_VIS_NAME"
+ALL_CONTAINERS="$SEQUENTIAL_NAME $DESKTOP_NAME $CONTEXT7_NAME $SERENA_NAME $DRP_VIS_NAME"
 
 # MCP 환경 정지 스크립트
 echo "🛑 Stopping MCP environment for user: $USER_ID"

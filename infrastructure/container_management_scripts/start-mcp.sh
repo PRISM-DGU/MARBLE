@@ -23,17 +23,15 @@ SEQUENTIAL_NAME="mcp-sequential_${USER_ID}"
 DESKTOP_NAME="mcp-desktop-commander_${USER_ID}"
 CONTEXT7_NAME="mcp-context7_${USER_ID}"
 SERENA_NAME="mcp-serena_${USER_ID}"
-ARXIV_SEMANTIC_NAME="mcp-arxiv-semantic_${USER_ID}"
 DRP_VIS_NAME="drp-vis-mcp_${USER_ID}"
 
-# All MCP containers list (6 servers)
-ALL_CONTAINERS="$SEQUENTIAL_NAME $DESKTOP_NAME $CONTEXT7_NAME $SERENA_NAME $ARXIV_SEMANTIC_NAME $DRP_VIS_NAME"
+# All MCP containers list (5 servers)
+ALL_CONTAINERS="$SEQUENTIAL_NAME $DESKTOP_NAME $CONTEXT7_NAME $SERENA_NAME $DRP_VIS_NAME"
 
 # Function to check if required images exist
 check_required_images() {
     local desktop_tag="desktop-commander:MARBLE-${USER_ID}"
     local serena_tag="serena:MARBLE-${USER_ID}"
-    local arxiv_semantic_tag="arxiv-semantic:MARBLE-${USER_ID}"
     local sequential_tag="mcp/sequentialthinking:MARBLE-${USER_ID}"
     local context7_tag="mcp/context7:MARBLE-${USER_ID}"
     local drp_vis_tag="drp-vis-mcp:MARBLE-${USER_ID}"
@@ -45,10 +43,6 @@ check_required_images() {
 
     if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "^${serena_tag}$"; then
         missing_images+=("$serena_tag")
-    fi
-
-    if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "^${arxiv_semantic_tag}$"; then
-        missing_images+=("$arxiv_semantic_tag")
     fi
 
     if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q "^${sequential_tag}$"; then
@@ -134,7 +128,6 @@ build_model_images() {
 DESKTOP_IMAGE_TAG="desktop-commander:MARBLE-${USER_ID}"
 SERENA_IMAGE_TAG="serena:MARBLE-${USER_ID}"
 DRP_VIS_IMAGE_TAG="drp-vis-mcp:MARBLE-${USER_ID}"
-ARXIV_SEMANTIC_IMAGE_TAG="arxiv-semantic:MARBLE-${USER_ID}"
 SEQUENTIAL_IMAGE_TAG="mcp/sequentialthinking:MARBLE-${USER_ID}"
 CONTEXT7_IMAGE_TAG="mcp/context7:MARBLE-${USER_ID}"
 
@@ -151,19 +144,17 @@ echo "🚀 Starting MCP environment..."
 echo "📁 Using PROJECT_ROOT: $PROJECT_ROOT"
 echo "👤 Current User: $CURRENT_USER (UID: $CURRENT_UID, GID: $CURRENT_GID)"
 echo "🏷️ Container naming with USER_ID: $USER_ID"
-echo "📋 Container Names (6 MCP servers):"
+echo "📋 Container Names (5 MCP servers):"
 echo "   Sequential: $SEQUENTIAL_NAME"
 echo "   Desktop: $DESKTOP_NAME"
 echo "   Context7: $CONTEXT7_NAME"
 echo "   Serena: $SERENA_NAME"
-echo "   ArXiv-Semantic: $ARXIV_SEMANTIC_NAME"
 echo "   DRP-VIS: $DRP_VIS_NAME"
 echo "📦 Image Tags:"
 echo "   Sequential: $SEQUENTIAL_IMAGE_TAG"
 echo "   Desktop: $DESKTOP_IMAGE_TAG"
 echo "   Context7: $CONTEXT7_IMAGE_TAG"
 echo "   Serena: $SERENA_IMAGE_TAG"
-echo "   ArXiv-Semantic: $ARXIV_SEMANTIC_IMAGE_TAG"
 echo "   DRP-VIS: $DRP_VIS_IMAGE_TAG"
 echo "🧬 Model Execution Images:"
 echo "   DeepTTA: $DEEPTTA_IMAGE_TAG"
@@ -178,18 +169,6 @@ check_required_images
 
 # Build model execution images (6 supported models)
 build_model_images
-
-# Create required directories for ArXiv-Semantic MCP
-echo "📁 Creating required directories..."
-mkdir -p "$PROJECT_ROOT/experiments/arxiv/papers"
-mkdir -p "$PROJECT_ROOT/experiments/arxiv/embeddings"
-mkdir -p "$PROJECT_ROOT/experiments/arxiv/chromadb"
-mkdir -p "$PROJECT_ROOT/experiments/arxiv/.cache"
-echo "✅ Directory structure created:
-   - $PROJECT_ROOT/experiments/arxiv/papers
-   - $PROJECT_ROOT/experiments/arxiv/embeddings
-   - $PROJECT_ROOT/experiments/arxiv/chromadb
-   - $PROJECT_ROOT/experiments/arxiv/.cache"
 
 echo "🧹 Cleaning up existing containers for user: $USER_ID..."
 docker stop $ALL_CONTAINERS 2>/dev/null || true
@@ -238,19 +217,6 @@ else
       -i -t \
       ${SERENA_IMAGE_TAG} .venv/bin/serena-mcp-server --transport stdio --project /workspace
 fi
-
-echo "🔬 Starting ArXiv-Semantic MCP server..."
-docker run -d --name ${ARXIV_SEMANTIC_NAME} --restart unless-stopped \
-  --user $CURRENT_UID:$CURRENT_GID \
-  -e HOME="/home/$CURRENT_USER" \
-  -e USER=$CURRENT_USER \
-  -e PAPERS_DIR="/workspace/experiments/arxiv/papers" \
-  -e EMBEDDINGS_DIR="/workspace/experiments/arxiv/embeddings" \
-  -e CHROMA_DB_PATH="/workspace/experiments/arxiv/chromadb" \
-  -e TRANSFORMERS_CACHE="/workspace/experiments/arxiv/.cache" \
-  -v $PROJECT_ROOT:/workspace \
-  -i -t \
-  ${ARXIV_SEMANTIC_IMAGE_TAG}
 
 # Calculate unique port for DRP-VIS based on UID to avoid conflicts
 # Base port 10000 + UID ensures each user has a unique port

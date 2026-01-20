@@ -333,11 +333,6 @@ class DynamicMCPConfig:
         return f"mcp-serena_{self.user_id}"
     
     @property
-    def ARXIV_SEMANTIC_MCP(self) -> str:
-        """ArXiv Semantic MCP 서버 컨테이너 이름"""
-        return f"mcp-arxiv-semantic_{self.user_id}"
-
-    @property
     def DRP_VIS_MCP(self) -> str:
         """DRP Visualization MCP 서버 컨테이너 이름"""
         return f"drp-vis-mcp_{self.user_id}"
@@ -360,7 +355,6 @@ class DynamicMCPConfig:
                 'mcp-desktop-commander': True,
                 'mcp-context7': True,
                 'mcp-serena': True,
-                'mcp-arxiv-semantic': False,  # 미사용 - 비활성화
                 # 'mcp-zotero': False,  # Disabled
             }
 
@@ -376,8 +370,6 @@ class DynamicMCPConfig:
             containers.append(self.CONTEXT7_MCP)
         if self.enabled_servers.get('mcp-serena', True):
             containers.append(self.SERENA_MCP)
-        if self.enabled_servers.get('mcp-arxiv-semantic', True):
-            containers.append(self.ARXIV_SEMANTIC_MCP)
         # if self.enabled_servers.get('mcp-execution', True):  # Legacy - removed
         #     containers.append(self.EXECUTION_MCP)
         if self.enabled_servers.get('drp-vis', True):
@@ -392,7 +384,6 @@ class DynamicMCPConfig:
             "desktop": self.DESKTOP_MCP,
             "context7": self.CONTEXT7_MCP,
             "serena": self.SERENA_MCP,
-            "arxiv_semantic": self.ARXIV_SEMANTIC_MCP,
             "drp_vis": self.DRP_VIS_MCP,
         }
 

@@ -49,20 +49,6 @@
         "list_memories"
       ]
     },
-    "mcp-arxiv-semantic": {
-      "enabled": true,
-      "container_name": "mcp-arxiv-semantic",
-      "command": "python",
-      "args": ["/app/src/server.py"],
-      "transport": "stdio",
-      "description": "Enhanced ArXiv MCP with semantic search and deep paper analysis",
-      "env": {
-        "PAPERS_DIR": "/workspace/papers",
-        "EMBEDDINGS_DIR": "/workspace/embeddings",
-        "CHROMA_DB_PATH": "/workspace/chromadb",
-        "TRANSFORMERS_CACHE": "/workspace/.cache"
-      }
-    },
     "mcp-execution": {
       "enabled": true,
       "container_name": "mcp-execution",
