@@ -6,10 +6,10 @@ Filters: PDF available + GitHub available
 Target: ~200 papers per domain
 
 Domains:
-1. spatial_transcriptomics (STAGATE, DeepST)
-2. drug_response_prediction (DeepTTA, DRPreter)
-3. drug_target_interaction (DREAMwalk, EXPdrug)
-4. drug_repurposing (HyperAttentionDTI, DrugBAN)
+1. spatial_transcriptomics 
+2. drug_response_prediction 
+3. drug_target_interaction
+4. drug_repurposing 
 """
 
 import json
