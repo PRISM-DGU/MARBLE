@@ -23,6 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
+from dotenv import load_dotenv
 
 
 def log(msg: str):
@@ -33,7 +34,12 @@ def log(msg: str):
 # Configuration
 # =============================================================================
 
-BASE_DIR = Path("/data/project/atwoddl/DRAgent/experiments/pdf")
+# Load .env file from project root
+ENV_PATH = Path(__file__).parent.parent.parent / ".env"
+load_dotenv(ENV_PATH)
+
+PROJECT_ROOT = os.getenv("PROJECT_ROOT", "/data/project/atwoddl/DRAgent")
+BASE_DIR = Path(PROJECT_ROOT) / "experiments" / "pdf"
 MAX_PAPERS_PER_DOMAIN = 500
 PMC_MAX_PER_KEYWORD = 800
 OPENREVIEW_VENUES = {
@@ -615,7 +621,12 @@ def download_pdf(paper: Dict, output_dir: Path, index: int, total: int) -> Optio
 
 def download_papers_for_domain(papers: List[Dict], output_dir: Path, max_papers: int = MAX_PAPERS_PER_DOMAIN) -> Dict:
     """Download PDFs for a domain. Returns stats."""
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Create output directory before downloading
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
+        log(f"[DOWNLOAD] Created directory: {output_dir}")
+    else:
+        log(f"[DOWNLOAD] Directory exists: {output_dir}")
 
     stats = {"downloaded": 0, "failed": 0, "papers": []}
 
@@ -779,6 +790,14 @@ def process_domain(domain_key: str, config: DomainConfig) -> Dict:
 
 def main():
     """Main entry point."""
+    # Create all directories immediately
+    BASE_DIR.mkdir(parents=True, exist_ok=True)
+    log(f"[INIT] Created base directory: {BASE_DIR}")
+    for config in DOMAINS.values():
+        domain_dir = BASE_DIR / config.folder_name
+        domain_dir.mkdir(parents=True, exist_ok=True)
+        log(f"[INIT] Created domain directory: {domain_dir}")
+
     # Unbuffered output for real-time logging
     log("="*70)
     log("  PAPER DOWNLOAD SCRIPT FOR 4 DOMAINS")
@@ -791,8 +810,6 @@ def main():
     log("\nDomains to process:")
     for i, (key, config) in enumerate(DOMAINS.items()):
         log(f"  [{i+1}] {config.name} ({config.folder_name})")
-
-    BASE_DIR.mkdir(parents=True, exist_ok=True)
 
     results = {}
     total_domains = len(DOMAINS)

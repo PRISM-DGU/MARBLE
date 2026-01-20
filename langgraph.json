@@ -30,7 +30,7 @@
       "."
     ],
     "graphs": {
-      "dr_agent": "./agent_workflow/main_graph_builder.py:app"
+      "MARBLE": "./agent_workflow/main_graph_builder.py:app"
     },
     "env": ".env"
   }
