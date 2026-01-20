@@ -118,11 +118,6 @@ legacy/
 input_raw_data/
 scripts/
 
-
-/experiments/experiments/dipk/checkpoints/
-/experiments/experiments/drpreter/results/
-/experiments/experiments/drpreter/weights/
-
 # Execution results and logs
 Results/
 execution_logs/
