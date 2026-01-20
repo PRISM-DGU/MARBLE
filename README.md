@@ -77,16 +77,7 @@ USER_ID=$(whoami)
 ./infrastructure/container_management_scripts/start-mcp.sh
 ```
 
-### 4. Download Datasets
-
-Download the datasets from [Google Drive](https://drive.google.com/drive/folders/1NpdWpoRU5MSNTGGHkYOpr-2GtORaL7t2?usp=drive_link) and extract to the project root:
-
-```bash
-# Extract datasets.tar.gz to MARBLE/datasets/
-tar -xzf datasets.tar.gz -C /path/to/MARBLE/
-```
-
-### 5. Download Reference Papers
+### 4. Download Reference Papers
 
 ```bash
 python infrastructure/download_pdf/download_papers.py
