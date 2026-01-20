@@ -77,6 +77,14 @@ USER_ID=$(whoami)
 ./infrastructure/container_management_scripts/start-mcp.sh
 ```
 
+### 4. Download Reference Papers
+
+```bash
+python infrastructure/download_pdf/download_papers.py
+```
+
+This downloads bioinformatics papers from PMC and OpenReview for model training reference.
+
 ## Running MARBLE
 
 ### 1. Start LangGraph Server
